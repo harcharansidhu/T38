@@ -3,17 +3,41 @@
 #START A CHAT WITH YOUR MENTOR, SCHEDULE A CALL OR GET SUPPORT OVER EMAIL.
 #*************************************
 
-# *** NOTE ON COMMENTS ***
-# This is a comment in Python.
-# Comments can be placed anywhere in Python code and the computer ignores them - they are intended to be read by humans.
-# Any line with a # in front of it is a comment and any with  ''' is also a docstring.
-# Please read all the comments in this example file and all others.
-
 from tabulate import tabulate
 import spacy  # importing spacy
 # Specify the 2 models to use
 nlp = spacy.load('en_core_web_md')
 nlp_sm = spacy.load('en_core_web_sm')
+
+# HELPER FUNCTION
+
+def tabulate_similarity(text1, text2):
+    ''' 
+    create a table to record the similarity score per nlp model for comparison
+    '''
+    
+    # Create rows, each row represents the similarity score from different models on the same input
+    sim_score = []
+
+    # Record scores per text sample.
+    for token in text1:
+        token_md = nlp(token)
+        token_sm = nlp_sm(token)
+        for token_ in text2:
+            token_md2 = nlp(token_)
+            token_sm2 = nlp_sm(token_)
+            sim_score.append(
+                [token_md.similarity(token_md2),
+                token_sm.similarity(token_sm2)]
+                )
+    
+    # Create table header
+    header = ['Language model md', 'Language model sm']
+    
+    # Create table
+    table = tabulate(sim_score, headers=header, tablefmt='mixed_grid')
+
+    return table
 
 # Now we are going to look into longer texts and compare them. 
 # Below we have two lists: one containing complaints submitted to a company, and another of recipes found online.
@@ -33,25 +57,10 @@ complaints = [ 'We bought a house in  CA. Our mortgage was handled by a company 
 # We will now compare the similarity of the complaints to ascertain if spaCy's similarity
 # model is able to distinguish between these long pieces of text.
 
-# create a table to record the similarity score per nlp model for comparison
+print("\n-------------Complaints similarity---------------")
 
-# record row
-sim_score = []
-
-print("-------------Complaints similarity---------------")
-for token in complaints:
-    token_md = nlp(token)
-    token_sm = nlp_sm(token)
-    for token_ in complaints:
-        token_md2 = nlp(token_)
-        token_sm2 = nlp_sm(token_)
-        sim_score.append(
-            [token_md.similarity(token_md2),
-            token_sm.similarity(token_sm2)]
-            )
-
-header = ['Language model md', 'Language model sm']
-table = tabulate(sim_score, headers=header, tablefmt='mixed_grid')
+# Create table of similarity scores
+table = tabulate_similarity(complaints, complaints)
 
 print(table)
 
@@ -68,23 +77,22 @@ recipes= [ 'Bake in the preheated oven, stirring every 20 minutes, until sugar m
 # We will now compare the similarity of the recipes. to ascertain how well spaCy's similarity
 # model is able to distinguish between them.
 
-print("-------------Recipes similarity---------------")
-for token in recipes:
-    token = nlp(token)
-    for token_ in recipes:
-        token_ = nlp(token_)
-        print(token.similarity(token_))
+print("\n-------------Recipes similarity---------------")
+
+# Create table of similarity scores
+table = tabulate_similarity(recipes, recipes)
+
+print(table)
 
 # Now we want to obtain the extent of similarity between the complaints and the recipes.
 # we will loop through every recipe instruction and compare it with a complaint.
 
-print("-------------Recipes similarity---------------")
+print("\n-------------Recipes similarity---------------")
 
-for token in recipes:
-    token = nlp(token)
-    for token_ in complaints:
-        token_ = nlp(token_)
-        print(token.similarity(token_))
+# Create table of similarity scores
+table = tabulate_similarity(recipes, complaints)
+
+print(table)
 
 # What do you observe? Note that the similarity index has reduced from what we observed in the short-text example discussed in the content PDF.
 
