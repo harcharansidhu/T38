@@ -94,6 +94,11 @@ table = tabulate_similarity(recipes, complaints)
 
 print(table)
 
+
+# COMMENTS
+# 1. There is a warning message given that the 'sm' model 'you're using has no word vectors loaded'.
+# 2. The 'sm' language model gives a much lower similarity score than the 'md' language model.
+
 # What do you observe? Note that the similarity index has reduced from what we observed in the short-text example discussed in the content PDF.
 
 
